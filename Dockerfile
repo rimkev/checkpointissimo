@@ -9,4 +9,4 @@ COPY ./src/ .
 
 EXPOSE 80
 
-CMD ["python", "app.py"]
+CMD ["flask", "--app", "./src/app.py", "run"]
