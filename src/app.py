@@ -4,7 +4,7 @@ from markupsafe import escape
 from os import getenv
 
 # initializing application
-app = Flask(__name__)
+app = Flask(__name__, static_folder='templates/static')
 
 # initializing session
 session_key = getenv('SESSION_KEY')
@@ -16,3 +16,8 @@ app.secret_key = session_key.encode('utf-8')
 @app.route('/', methods=['GET'])
 def homepage():
     return render_template('index.html')
+
+# about page route
+@app.route('/about', methods=['GET'])
+def about_page():
+    return render_template('about.html')
