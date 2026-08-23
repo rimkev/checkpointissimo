@@ -7,9 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
-    <body id="starting-page">
-        <script src="" async defer></script>
-
+    <body>
         <!-- video buffers for stutter-free visual experience when swapping videos -->
         <video
             id="starting-page-video-buffer-2"
@@ -35,8 +33,8 @@
 
             // all videos
             const videos = [
-                "{{url_for('static', filename='playing-flute.mp4')}}", // https://www.pexels.com/video/boy-learning-to-play-flute-at-home-with-a-woman-8192037/
-                "{{url_for('static', filename='playing-synth.mp4')}}" // https://www.pexels.com/video/relaxing-piano-music-played-on-a-keyboard-36546214/
+                "{{url_for('static', filename='playing-flute.mp4')}}",
+                "{{url_for('static', filename='playing-synth.mp4')}}"
             ]
             let index = 0
 
@@ -66,13 +64,14 @@
         </script>
 
 
-        <!-- https://pixabay.com/gifs/scores-music-melody-rain-notes-12976/ -->
+        <!-- falling notes -->
         <img
             id="starting-page-gif"
             src="{{url_for('static', filename='notes.gif')}}"
             alt="Colorful falling notes"
         >
 
+        <!-- contents -->
         <div id="starting-page-content">
             <h2>Taking on an instrument?</h2>
             <h2>Make your learning curve less steep with</h2>
