@@ -6,11 +6,67 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
     </head>
     <body id="starting-page">
         <script src="" async defer></script>
 
+        <!-- video buffers for stutter-free visual experience when swapping videos -->
+        <video
+            id="starting-page-video-buffer-2"
+            muted
+            playsinline
+            aria-hidden="true"
+            hidden>
+        </video>
+        <video
+            id="starting-page-video-buffer-1"
+            src="{{url_for('static', filename='playing-flute.mp4')}}"
+            muted
+            playsinline
+            autoplay
+            aria-hidden="true">
+        </video>
+
+        <!-- video swapping automation script -->
+        <script type="module">
+            // buffers
+            const videoBuffer1 = document.getElementById("starting-page-video-buffer-1")
+            const videoBuffer2 = document.getElementById("starting-page-video-buffer-2")
+
+            // all videos
+            const videos = [
+                "{{url_for('static', filename='playing-flute.mp4')}}", // https://www.pexels.com/video/boy-learning-to-play-flute-at-home-with-a-woman-8192037/
+                "{{url_for('static', filename='playing-synth.mp4')}}" // https://www.pexels.com/video/relaxing-piano-music-played-on-a-keyboard-36546214/
+            ]
+            let index = 0
+
+            // videoBuffer1 listener
+            videoBuffer1.addEventListener("canplay", () => {
+                videoBuffer1.hidden = false
+                videoBuffer2.hidden = true
+                setTimeout(function(){
+                    index = (index + 1) % videos.length
+                    videoBuffer2.src = videos[index]
+                    videoBuffer2.load()
+                    videoBuffer2.play()
+                }, 10_000)
+            })
+
+            // videoBuffer2 listener
+            videoBuffer2.addEventListener("canplay", () => {
+                videoBuffer2.hidden = false
+                videoBuffer1.hidden = true
+                setTimeout(function(){
+                    index = (index + 1) % videos.length
+                    videoBuffer1.src = videos[index]
+                    videoBuffer1.load()
+                    videoBuffer1.play()
+                }, 10_000)
+            })
+        </script>
+
+
+        <!-- https://pixabay.com/gifs/scores-music-melody-rain-notes-12976/ -->
         <img
             id="starting-page-gif"
             src="{{url_for('static', filename='notes.gif')}}"

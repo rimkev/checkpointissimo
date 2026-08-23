@@ -10,31 +10,37 @@
     font-family: Garamond, serif;
     color: white;
     font-size: 15px;
-    margin: 5px;
+    text-shadow: 2px 2px 4px #000000;
+    margin: 0px;
     padding: 0px;
 }
 
 /* whole starting page */
 #starting-page {
-    margin: 0;
-    padding: 0;
     width: 100%;
     height: 100%;
-    background-color: #110d38;
+    background-color: #000000;
     position: relative;
+}
+
+/* background video in starting page */
+#starting-page-video-buffer-1, #starting-page-video-buffer-2 {
+    width: 100%;
+    z-index: 1;
+    position: absolute;
 }
 
 /* moving gif animation when hovered over start button */
 #starting-page-gif {
     width: 100%;
-    z-index: 1;
+    z-index: 2;
     position: absolute;
 }
 
 /* text contents of starting page */
 #starting-page-content {
     width: 100%;
-    z-index: 2;
+    z-index: 3;
     position: absolute;
     text-align: center;
     margin-top: 50px;
