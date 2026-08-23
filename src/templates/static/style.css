@@ -30,11 +30,16 @@
     position: absolute;
 }
 
-/* moving gif animation when hovered over start button */
+/* moving gif's general properties */
 #starting-page-gif {
     width: 100%;
     z-index: 2;
     position: absolute;
+    display: none;
+}
+/* moving gif animation when hovered over start button */
+#starting-page:has(#get-started-button:hover) #starting-page-gif {
+    display: block;
 }
 
 /* text contents of starting page */
@@ -68,5 +73,17 @@ h2 {
     font-weight: bold;
     font-style: italic;
     margin-top: 60px;
+    margin-bottom: 10px;
     padding: 8px 12px 8px 12px;
+}
+#get-started-button:hover {
+    animation: button-pulse 0.25s infinite alternate;
+}
+@keyframes button-pulse {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
 }
