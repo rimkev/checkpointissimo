@@ -38,7 +38,7 @@ body {
     display: none;
 }
 /* moving gif animation when hovered over start button */
-#starting-page:has(#get-started-button:hover) #starting-page-gif {
+body:has(#get-started-button:hover) #starting-page-gif {
     display: block;
 }
 
