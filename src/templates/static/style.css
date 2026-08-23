@@ -43,7 +43,7 @@
 }
 
 /* text contents of starting page */
-#starting-page-content {
+#starting-page-content, footer {
     width: 100%;
     z-index: 3;
     position: absolute;
@@ -76,6 +76,7 @@ h2 {
     margin-bottom: 10px;
     padding: 8px 12px 8px 12px;
 }
+/* hovered over animation */
 #get-started-button:hover {
     animation: button-pulse 0.25s infinite alternate;
 }
@@ -86,4 +87,13 @@ h2 {
     to {
         transform: scale(1.1);
     }
+}
+
+/* author's signature */
+footer {
+    background-color: black;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    position: fixed;
+    bottom: 3px;
 }

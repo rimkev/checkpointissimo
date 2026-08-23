@@ -21,3 +21,8 @@ def homepage():
 @app.route('/about', methods=['GET'])
 def about_page():
     return render_template('about.html')
+
+# sources page route
+@app.route('/sources', methods=['GET'])
+def sources_page():
+    return render_template('sources.html')
