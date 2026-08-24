@@ -9,15 +9,17 @@
         muted
         playsinline
         aria-hidden="true"
+        preload="auto"
         hidden>
     </video>
     <video
         id="starting-page-video-buffer-1"
-        src="{{url_for('static', filename='media/playing-flute.mp4')}}"
         muted
         playsinline
+        aria-hidden="true"
+        preload="auto"
         autoplay
-        aria-hidden="true">
+        src="{{url_for('static', filename='media/playing-flute.mp4')}}">
     </video>
 
 
