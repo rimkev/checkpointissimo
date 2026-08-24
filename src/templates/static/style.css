@@ -16,7 +16,7 @@
 }
 
 /* entire page */
-body {
+html, body {
     width: 100%;
     height: 100%;
     position: relative;
@@ -105,6 +105,7 @@ header {
     padding-top: 6px;
     padding-bottom: 6px;
     text-align: center;
+    z-index: 3;
 }
 
 /* author's signature */
@@ -118,4 +119,79 @@ footer {
 
 li {
     margin-left: 26px;
+}
+
+
+div.vertical {
+    flex-direction: column;
+}
+
+div.horizontal {
+    flex-direction: row;
+}
+
+div.horizontal, div.vertical {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    margin: 4px;
+    padding: 3px;
+    border: 4px solid white;
+    border-radius: 7px;
+}
+
+#play-page-div-0 {
+    height: calc(100% - 80px);
+}
+
+#play-page-div-2 {
+    z-index: 2;
+    flex: 0 0 13%;
+}
+
+#play-page-div-1, #play-page-div-3 {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+}
+
+#video-playback-section {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 0 0 80%;
+}
+
+#jump-button, #add-checkpoint-button, #add-video-button, #remove-video-button, #start-button, #autoplay-button, #navigation-button {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: 2px solid black;
+    border-radius: 7px;
+}
+
+#start-button {
+    background-color: #33b76e;
+}
+
+#autoplay-button {
+    background-color: #33b76e;
+}
+
+#jump-button {
+    background-color: #d4a93b;
+}
+
+#add-checkpoint-button {
+    background-color: #9f8031;
+}
+
+#add-video-button {
+    background-color: #3668ff;
+}
+
+#remove-video-button {
+    background-color: #cf2c2c;
+}
+
+#navigation-button {
+    background-color: #777777ac;
+    width: 100%;
 }

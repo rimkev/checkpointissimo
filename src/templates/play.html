@@ -1,6 +1,49 @@
-{%extends "base.html" %}
+{%extends "base.html"%}
 {%block title%}Checkpointissimo{%endblock%}
+{%block script%}<script src="{{url_for('static', filename='js/play.js')}}" defer></script>{%endblock%}
 
 {%block content%}
-    
+    <!-- header with program's name on it -->
+    <header>
+        <a href="/" style="text-decoration:none">
+            <h1 class="header">Checkpointissimo</h1>
+        </a>
+    </header>
+
+    <!-- background -->
+    <img
+        class="background"
+        src="{{url_for('static', filename='media/colors-background.jpg')}}"
+        alt="background image"
+    >
+
+    <!-- content -->
+    <div class="horizontal" id="play-page-div-0">
+        <div class="vertical" id="play-page-div-2">
+            <nav>
+                <button type="button" id="navigation-button">Song no. 1</button>
+            </nav>
+        </div>
+
+        <div class="horizontal" id="play-page-div-1">
+            <section id="video-playback-section">
+                <iframe width="100%" height="300px" src="https://www.youtube.com/embed/zIF70l1zUKU" title="YouTube video player" allow="autoplay; encrypted-media"></iframe>
+                <iframe width="100%" height="300px" src="https://www.youtube.com/embed/zIF70l1zUKU?si=sgR7LGQZ2OgX3Rhf" title="YouTube video player" allow="autoplay; encrypted-media"></iframe>
+                <iframe width="100%" height="300px" src="https://www.youtube.com/embed/zIF70l1zUKU?si=sgR7LGQZ2OgX3Rhf" title="YouTube video player" allow="autoplay; encrypted-media"></iframe>
+            </section>
+
+            <div class="vertical" id="play-page-div-3">
+                <section>
+
+                </section>
+                
+                <button type="button" id="start-button">Start all videos</button>
+                <button type="button" id="autoplay-button">Autoplay toggle (on)</button>
+                <button type="button" id="jump-button">Jump to last</button>
+                <button type="button" id="add-checkpoint-button">Add new checkpoint</button>
+                <button type="button" id="add-video-button">Add new video</button>
+                <button type="button" id="remove-video-button">Remove last video</button>
+            </div>
+        </div>
+    </div>
 {%endblock%}
