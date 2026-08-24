@@ -1,54 +1,38 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Checkpointissimo | Sources</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-    </head>
-    <body>
-        <!-- header with program's name on it -->
-        <header>
-            <a href="/" style="text-decoration:none">
-                <h1 class="header">Checkpointissimo</h1>
-            </a>
-        </header>
-        
-        <!-- background -->
-        <img
-            class="background"
-            src="{{url_for('static', filename='media/colors-background.jpg')}}"
-            alt="background image"
-        >
+{%extends "base.html"%}
+{%block title%}Checkpointissimo | Sources{%endblock%}
 
-        <div id="sources-page-content">
-            <!-- sources -->
-            <h2>Images and GIFs:</h2>
-            <ol>
-                <li><a href="https://pixabay.com/gifs/scores-music-melody-rain-notes-12976/">https://pixabay.com/gifs/scores-music-melody-rain-notes-12976/</a></li>
-                <li><a href="https://pixabay.com/illustrations/background-grunge-effect-grunge-970840/">https://pixabay.com/illustrations/background-grunge-effect-grunge-970840/</a></li>
-            </ol>
+{%block content%}
+    <!-- header with program's name on it -->
+    <header>
+        <a href="/" style="text-decoration:none">
+            <h1 class="header">Checkpointissimo</h1>
+        </a>
+    </header>
+    
+    <!-- background -->
+    <img
+        class="background"
+        src="{{url_for('static', filename='media/colors-background.jpg')}}"
+        alt="background image"
+    >
 
-            <h2>Videos:</h2>
-            <ol>
-                <li><a href="https://www.pexels.com/video/boy-learning-to-play-flute-at-home-with-a-woman-8192037/">https://www.pexels.com/video/boy-learning-to-play-flute-at-home-with-a-woman-8192037/</a></li>
-                <li><a href="https://www.pexels.com/video/relaxing-piano-music-played-on-a-keyboard-36546214/">https://www.pexels.com/video/relaxing-piano-music-played-on-a-keyboard-36546214/</a></li>
-            </ol>
+    <div id="sources-page-content">
+        <!-- sources -->
+        <h2>Images and GIFs:</h2>
+        <ol>
+            <li><a href="https://pixabay.com/gifs/scores-music-melody-rain-notes-12976/">https://pixabay.com/gifs/scores-music-melody-rain-notes-12976/</a></li>
+            <li><a href="https://pixabay.com/illustrations/background-grunge-effect-grunge-970840/">https://pixabay.com/illustrations/background-grunge-effect-grunge-970840/</a></li>
+        </ol>
 
-            <h2>Fonts:</h2>
-            <ol>
-                <li><a href="https://www.dafontfree.co/wp-content/uploads/download-manager-files/Brush%20Script%20MT.zip">https://www.dafontfree.co/wp-content/uploads/download-manager-files/Brush%20Script%20MT.zip</a></li>
-            </ol>
+        <h2>Videos:</h2>
+        <ol>
+            <li><a href="https://www.pexels.com/video/boy-learning-to-play-flute-at-home-with-a-woman-8192037/">https://www.pexels.com/video/boy-learning-to-play-flute-at-home-with-a-woman-8192037/</a></li>
+            <li><a href="https://www.pexels.com/video/relaxing-piano-music-played-on-a-keyboard-36546214/">https://www.pexels.com/video/relaxing-piano-music-played-on-a-keyboard-36546214/</a></li>
+        </ol>
 
-            <!-- author's signature -->
-            <footer>
-                <p>
-                    <i>
-                        <pre>&copy; 2026 Rimantas Rimkevičius   <b>/</b>   Contact me: <a href="mailto:rr@rotorklubas.lt">rr@rotorklubas.lt</a>   <b>/</b>   Assets used in programming that I do not own are listed <a href="/sources">here</a></pre>
-                    </i>
-                </p>
-            </footer>
-        </div>
-    </body>
-</html>
+        <h2>Fonts:</h2>
+        <ol>
+            <li><a href="https://www.dafontfree.co/wp-content/uploads/download-manager-files/Brush%20Script%20MT.zip">https://www.dafontfree.co/wp-content/uploads/download-manager-files/Brush%20Script%20MT.zip</a></li>
+        </ol>
+    </div>
+{%endblock%}

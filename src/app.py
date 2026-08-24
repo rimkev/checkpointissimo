@@ -26,3 +26,8 @@ def about_page():
 @app.route('/sources', methods=['GET'])
 def sources_page():
     return render_template('sources.html')
+
+# main program's page route
+@app.route('/play', methods=['GET'])
+def play_page():
+    return render_template('play.html')

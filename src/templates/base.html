@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{%block title%}{%endblock%}</title>
+        <meta name="description" content="Practice your instrument seamlessly!">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+        {%block script%}{%endblock%}
+    </head>
+    <body>
+        <!-- any page content -->
+        {%block content%}{%endblock%}
+
+        <!-- author's signature -->
+        <footer>
+            <p>
+                <i>
+                    <pre>&copy; 2026 Rimantas Rimkevičius   <b>/</b>   Contact me: <a href="mailto:rr@rotorklubas.lt">rr@rotorklubas.lt</a>   <b>/</b>   Assets used in programming that I do not own are listed <a href="/sources">here</a></pre>
+                </i>
+            </p>
+        </footer>
+    </body>
+</html>
