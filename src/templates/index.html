@@ -6,6 +6,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+        <script src="{{url_for('static', filename='js/index.js')}}" defer></script>
     </head>
     <body>
         <!-- video buffers for stutter-free visual experience when swapping videos -->
@@ -18,56 +19,18 @@
         </video>
         <video
             id="starting-page-video-buffer-1"
-            src="{{url_for('static', filename='playing-flute.mp4')}}"
+            src="{{url_for('static', filename='media/playing-flute.mp4')}}"
             muted
             playsinline
             autoplay
             aria-hidden="true">
         </video>
 
-        <!-- video swapping automation script -->
-        <script type="module">
-            // buffers
-            const videoBuffer1 = document.getElementById("starting-page-video-buffer-1")
-            const videoBuffer2 = document.getElementById("starting-page-video-buffer-2")
-
-            // all videos
-            const videos = [
-                "{{url_for('static', filename='playing-flute.mp4')}}",
-                "{{url_for('static', filename='playing-synth.mp4')}}"
-            ]
-            let index = 0
-
-            // videoBuffer1 listener
-            videoBuffer1.addEventListener("canplay", () => {
-                videoBuffer1.hidden = false
-                videoBuffer2.hidden = true
-                setTimeout(function(){
-                    index = (index + 1) % videos.length
-                    videoBuffer2.src = videos[index]
-                    videoBuffer2.load()
-                    videoBuffer2.play()
-                }, 10_000)
-            })
-
-            // videoBuffer2 listener
-            videoBuffer2.addEventListener("canplay", () => {
-                videoBuffer2.hidden = false
-                videoBuffer1.hidden = true
-                setTimeout(function(){
-                    index = (index + 1) % videos.length
-                    videoBuffer1.src = videos[index]
-                    videoBuffer1.load()
-                    videoBuffer1.play()
-                }, 10_000)
-            })
-        </script>
-
 
         <!-- falling notes -->
         <img
             id="starting-page-gif"
-            src="{{url_for('static', filename='notes.gif')}}"
+            src="{{url_for('static', filename='media/notes.gif')}}"
             alt="Colorful falling notes"
         >
 
