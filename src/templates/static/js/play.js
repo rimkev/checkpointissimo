@@ -15,8 +15,10 @@ var allVideos = []
 // button click action
 document.getElementById('add-video-button').onclick = function() {
     const videoId = getVideoId()
-    if (videoId !== -1)
+    if (videoId !== -1) {
         createVideo(videoId, allVideos)
+        enableButtons()
+    }
     else
         alert('Invalid Youtube link. Cannot import such video.')
 }
@@ -80,6 +82,13 @@ function createVideoIFrame(element, videoId) {
         },
     })
 }
+// enabling buttons when a video is added
+function enableButtons() {
+    // enabling buttons
+    document.getElementById('start-stop-button').disabled = false
+    document.getElementById('add-checkpoint-button').disabled = false
+    document.getElementById('remove-video-button').disabled = false
+}
 
 
 
@@ -90,10 +99,10 @@ function createVideoIFrame(element, videoId) {
 // VIDEO REMOVAL
 // button click action
 document.getElementById('remove-video-button').onclick = function() {
-    removeLastVideo(videoList)
+    removeLastVideo(allVideos, checkpoints)
 }
 // removing last video from the list
-function removeLastVideo(videoList) {
+function removeLastVideo(videoList, checkpointList) {
     const videoElements = document.getElementsByClassName('yt-video')
 
     if (videoElements.length !== 0) {
@@ -101,19 +110,31 @@ function removeLastVideo(videoList) {
         videoList.pop()
         // if all videos were deleted
         if (videoList.length === 0) {
-            // removing all checkpoints
-            const checkpointSection = document.getElementById('checkpoint-section')
-            checkpointSection.replaceChildren()
-            checkpoints = []
-
-            // resetting play/pause button
-            nowPlaying = false
-            changeStartStopBtnAppearance()
+            reset(checkpointList)
         }
     }
     else
         alert('Video list is already empty.')
 }
+// reset values
+function reset(checkpointList) {
+    // removing all checkpoints 
+    document.getElementById('checkpoint-section').replaceChildren()
+    checkpointList = []
+
+    // resetting play/pause button
+    nowPlaying = false
+    changeStartStopBtnAppearance()
+
+    // disabling buttons
+    document.getElementById('start-stop-button').disabled = true
+    document.getElementById('jump-button').disabled = true
+    document.getElementById('add-checkpoint-button').disabled = true
+    document.getElementById('remove-video-button').disabled = true
+}
+
+
+
 
 
 
@@ -199,6 +220,9 @@ document.getElementById('add-checkpoint-button').onclick = function() {
     // create checkpoint
     const timeSec = allVideos[0].getCurrentTime().toFixed(1)
     createCheckpoint(timeSec, checkpoints, allVideos)
+    
+    // enabling jump button only when there is at least one checkpoint
+    document.getElementById('jump-button').disabled = false
 }
 // create a new checkpoint
 function createCheckpoint(timeSec, checkpointList, videoList) {

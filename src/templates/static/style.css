@@ -207,3 +207,21 @@ li {
     background-color: #777777ac;
     width: 100%;
 }
+
+button {
+    transform: translateY(0px);
+    transition: transform 0.15s ease-out; /* when mouse cursor leaves button's area */
+}
+
+button:disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(-2px) scale(1.018);
+}
