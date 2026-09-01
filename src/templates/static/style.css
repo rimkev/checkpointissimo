@@ -122,15 +122,15 @@ li {
 }
 
 
-div.vertical {
+.vertical {
     flex-direction: column;
 }
 
-div.horizontal {
+.horizontal {
     flex-direction: row;
 }
 
-div.horizontal, div.vertical {
+.horizontal, .vertical {
     position: relative;
     z-index: 2;
     display: flex;
@@ -138,6 +138,13 @@ div.horizontal, div.vertical {
     padding: 3px;
     border: 4px solid white;
     border-radius: 7px;
+}
+
+#checkpoint-section {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
 }
 
 #play-page-div-0 {
@@ -160,19 +167,24 @@ div.horizontal, div.vertical {
     flex: 0 0 80%;
 }
 
-#jump-button, #add-checkpoint-button, #add-video-button, #remove-video-button, #start-button, #autoplay-button, #navigation-button {
+#checkpoint-section {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#jump-button, #add-checkpoint-button, #add-video-button, #remove-video-button, #start-stop-button, #autoplay-button, #navigation-button {
     margin-top: 2px;
     margin-bottom: 2px;
     border: 2px solid black;
     border-radius: 7px;
 }
 
-#start-button {
+.button-on {
     background-color: #33b76e;
 }
 
-#autoplay-button {
-    background-color: #33b76e;
+.button-off {
+    background-color: #b74533;
 }
 
 #jump-button {
