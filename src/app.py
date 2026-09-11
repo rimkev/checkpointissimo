@@ -30,4 +30,8 @@ def sources_page():
 # main program's page route
 @app.route('/play', methods=['GET'])
 def play_page():
-    return render_template('play.html')
+    data = {
+        'video_info': session.get('video_info', {}), # video_info = {'abc': 123.5, ...}; id and seconds
+        'checkpoints': session.get('checkpoints', []) # checkpoints = [125, 135, ...]; seconds
+    }
+    return render_template('play.html', data=data)

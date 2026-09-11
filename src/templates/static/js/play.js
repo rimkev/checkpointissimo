@@ -45,19 +45,19 @@ function getVideoId() {
     return returnable
 }
 // creating the necessary video div element and calling another function to turn it into IFrame
-function createVideo(videoId, videoList) {
+function createVideo(videoId, videoList, startingTime=null) {
     // create new div, which gets replaced by Youtube's iFrame
     const newDiv = document.createElement('div')
     newDiv.className = 'yt-video'
     // append it to the screen
     document.getElementById('video-playback-section').append(newDiv)
     // create the video iFrame
-    const iFrameObj = createVideoIFrame(newDiv, videoId, videoList)
+    const iFrameObj = createVideoIFrame(newDiv, videoId, videoList, startingTime)
     // push onto a list of all videos
     videoList['videoObjects'].push(iFrameObj)
 }
 // creating a Youtube IFrame out of a div element
-function createVideoIFrame(element, videoId, videoList) {
+function createVideoIFrame(element, videoId, videoList, startingTime) {
     return new YT.Player(element, {
         videoId: videoId,
         playerVars: {
@@ -67,7 +67,11 @@ function createVideoIFrame(element, videoId, videoList) {
         height: '300',
         width: '100%',
         events: {
-            onReady: () => {
+            onReady: (event) => {
+                // setting to a specific starting time if needed
+                if (startingTime !== null)
+                    event.target.seekTo(Number(startingTime), true)
+                    event.target.pauseVideo()
                 // removing video's id from uncued video ids array
                 const pendingIndex = videoList['uncuedVideoIds'].indexOf(videoId)
                 if (pendingIndex !== -1)
@@ -205,7 +209,7 @@ function stopAllVideos(videoList) {
 function startAllVideos(videoList) {
     // make sure all videos are ready to play (buffered)
     const whileLoop = setInterval(() => {
-        if (videoList['uncuedVideoIds'].length === 0) {// if no videos are left uncued
+        if (videoList['uncuedVideoIds'].length === 0) { // if no videos are left uncued
             // play
             videoList['videoObjects'].forEach(vid => vid.playVideo())
             // change start/stop button appearance
@@ -329,4 +333,30 @@ function lastVisitedCPTime(checkpointList, currentTime) {
     }
 
     return -1
+}
+
+
+
+
+
+
+
+
+// getting info from Python Flask
+function getFromFlask(sessionVideoInfo, sessionCheckpoints) {
+    // dealing with videos
+    if (Object.keys(sessionVideoInfo).length === 0)
+        return
+    for (let [id, time] of Object.entries(sessionVideoInfo)) {
+        createVideo(id, allVideos, Number(time))
+    }
+    enableButtons()
+
+    // dealing with checkpoints
+    if (sessionCheckpoints.length === 0)
+        return
+    for (let timeSec of sessionCheckpoints) {
+        createCheckpoint(timeSec, checkpoints, allVideos)
+    }
+    document.getElementById('jump-button').disabled = false
 }

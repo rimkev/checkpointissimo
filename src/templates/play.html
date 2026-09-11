@@ -3,6 +3,17 @@
 {%block script%}
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="{{url_for('static', filename='js/play.js')}}" defer></script>
+<script type="text/javascript">
+    // red errors are false interpretation of JS code, program runs fine
+    var sessionVideoInfo = {{data.video_info|tojson}}
+    var sessionCheckpoints = {{data.checkpoints|tojson}}
+    const tempWhileLoop = setInterval(() => {
+        if (typeof getFromFlask === 'function') {
+            clearInterval(tempWhileLoop)
+            getFromFlask(sessionVideoInfo, sessionCheckpoints)
+        }
+    }, 100)
+</script>
 {%endblock%}
 
 {%block content%}
