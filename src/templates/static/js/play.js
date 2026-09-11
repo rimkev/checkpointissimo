@@ -11,7 +11,11 @@ window.addEventListener('mousemove', () => {
 
 
 // ADDING VIDEO
-var allVideos = []
+var allVideos = {
+    'videoObjects': [],
+    'uncuedVideoIds': []
+}
+
 // button click action
 document.getElementById('add-video-button').onclick = function() {
     const videoId = getVideoId()
@@ -48,12 +52,12 @@ function createVideo(videoId, videoList) {
     // append it to the screen
     document.getElementById('video-playback-section').append(newDiv)
     // create the video iFrame
-    const iFrameObj = createVideoIFrame(newDiv, videoId)
+    const iFrameObj = createVideoIFrame(newDiv, videoId, videoList)
     // push onto a list of all videos
-    videoList.push(iFrameObj)
+    videoList['videoObjects'].push(iFrameObj)
 }
 // creating a Youtube IFrame out of a div element
-function createVideoIFrame(element, videoId) {
+function createVideoIFrame(element, videoId, videoList) {
     return new YT.Player(element, {
         videoId: videoId,
         playerVars: {
@@ -63,21 +67,28 @@ function createVideoIFrame(element, videoId) {
         height: '300',
         width: '100%',
         events: {
+            onReady: () => {
+                // removing video's id from uncued video ids array
+                const pendingIndex = videoList['uncuedVideoIds'].indexOf(videoId)
+                if (pendingIndex !== -1)
+                    videoList['uncuedVideoIds'].splice(pendingIndex, 1)
+            },
             onError: (event) => {
                 // removing the video player due to error after a delay to finish uploading first
                 setTimeout(() => {
-                    removeLastVideo()
+                    removeLastVideo(videoList, checkpoints)
                 }, 300)
                 alert(`YouTube player error ${event.data}. Video cannot be included.`)
             },
             'onStateChange': (event) => {
+                // PURPOSEFULLY COMMENTED OUT -> NOW EASIER TO GET CORRECT INITIAL TIMING FOR ALL VIDEOS
                 // stop or start all videos when interacted with individually to prevent out of sync situation
-                if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                    stopAllVideos(allVideos)
-                }
-                else if (event.data === YT.PlayerState.PLAYING) {
-                    startAllVideos(allVideos)
-                }
+                // if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                //     stopAllVideos(videoList)
+                // }
+                // else if (event.data === YT.PlayerState.PLAYING) {
+                //     startAllVideos(videoList)
+                // }
             }
         },
     })
@@ -106,10 +117,15 @@ function removeLastVideo(videoList, checkpointList) {
     const videoElements = document.getElementsByClassName('yt-video')
 
     if (videoElements.length !== 0) {
-        videoElements[videoElements.length - 1].remove()
+        const lastVid = videoElements[videoElements.length - 1]
+        const videoId = lastVid.getVideoData().video_id
+        lastVid.remove()
         videoList.pop()
+        // removing from uncued videos list
+        if (videoList['uncuedVideoIds'].includes(videoId))
+            videoList['uncuedVideoIds'].splice(videoList['uncuedVideoIds'].indexOf(videoId))
         // if all videos were deleted
-        if (videoList.length === 0) {
+        if (videoList['videoObjects'].length === 0) {
             reset(checkpointList)
         }
     }
@@ -169,7 +185,7 @@ function changeAutoplayBtnAppearance() {
 var nowPlaying = false
 // button action
 document.getElementById('start-stop-button').onclick = function() {
-    if (allVideos.length === 0)
+    if (allVideos['videoObjects'].length === 0)
         return
 
     if (nowPlaying) // have to stop
@@ -180,18 +196,25 @@ document.getElementById('start-stop-button').onclick = function() {
 // stop all videos
 function stopAllVideos(videoList) {
     // pause
-    videoList.forEach(vid => vid.pauseVideo())
+    videoList['videoObjects'].forEach(vid => vid.pauseVideo())
     // change start/stop button appearance
     nowPlaying = false
     changeStartStopBtnAppearance()
 }
 // start all videos
 function startAllVideos(videoList) {
-    // play
-    allVideos.forEach(vid => vid.playVideo())
-    // change start/stop button appearance
-    nowPlaying = true
-    changeStartStopBtnAppearance()
+    // make sure all videos are ready to play (buffered)
+    const whileLoop = setInterval(() => {
+        if (videoList['uncuedVideoIds'].length === 0) {// if no videos are left uncued
+            // play
+            videoList['videoObjects'].forEach(vid => vid.playVideo())
+            // change start/stop button appearance
+            nowPlaying = true
+            changeStartStopBtnAppearance()
+            // stop this while loop
+            clearInterval(whileLoop)
+        }
+    }, 100)
 }
 // changing the button's color and text
 function changeStartStopBtnAppearance() {
@@ -214,11 +237,11 @@ function changeStartStopBtnAppearance() {
 var checkpoints = []
 // button action
 document.getElementById('add-checkpoint-button').onclick = function() {
-    if (allVideos.length === 0)
+    if (allVideos['videoObjects'].length === 0)
         return
 
     // create checkpoint
-    const timeSec = allVideos[0].getCurrentTime().toFixed(1)
+    const timeSec = allVideos['videoObjects'][0].getCurrentTime().toFixed(1)
     createCheckpoint(timeSec, checkpoints, allVideos)
     
     // enabling jump button only when there is at least one checkpoint
@@ -226,7 +249,7 @@ document.getElementById('add-checkpoint-button').onclick = function() {
 }
 // create a new checkpoint
 function createCheckpoint(timeSec, checkpointList, videoList) {
-    if (videoList.length === 0)
+    if (videoList['videoObjects'].length === 0)
         return
 
     // new CP
@@ -249,9 +272,9 @@ function getTextFromSec(timeSec) {
 }
 // find out whether any videos cannot go further back (would sync out of the group)
 function outOfSyncPossibility(videoList, seekingTime) {
-    if (videoList.length !== 0) {
-        for (let video of videoList) {
-            const timeDffFromFirstVid = video.getCurrentTime().toFixed(1) - videoList[0].getCurrentTime().toFixed(1)
+    if (videoList['videoObjects'].length !== 0) {
+        for (let video of videoList['videoObjects']) {
+            const timeDffFromFirstVid = video.getCurrentTime().toFixed(1) - videoList['videoObjects'][0].getCurrentTime().toFixed(1)
             if (Number(seekingTime) + Number(timeDffFromFirstVid) < 0)
                 return true
         }
@@ -262,13 +285,15 @@ function outOfSyncPossibility(videoList, seekingTime) {
 function rewind(videoList, seekingTime) {
     const headstart = 1 // seconds to go back earlier than user intends to
     if (!outOfSyncPossibility(videoList, seekingTime - headstart)) {
-        if (videoList.length !== 0) {
-            videoList.forEach(vid => {
-                const timeDffFromFirstVid = vid.getCurrentTime().toFixed(1) - videoList[0].getCurrentTime().toFixed(1);
+        if (videoList['videoObjects'].length !== 0) {
+            videoList['videoObjects'].forEach(vid => {
+                const timeDffFromFirstVid = vid.getCurrentTime().toFixed(1) - videoList['videoObjects'][0].getCurrentTime().toFixed(1);
                 vid.seekTo(Number(seekingTime) + Number(timeDffFromFirstVid) - headstart, true)
             })
             if (!autoplayState)
                 stopAllVideos(videoList)
+            else
+                startAllVideos(videoList)
         }
     }
     else {
@@ -283,10 +308,10 @@ function rewind(videoList, seekingTime) {
 // GETTING BACK TO THE LAST CHECKPOINT BEHIND CURRENT TIME
 // button click action
 document.getElementById('jump-button').onclick = function() {
-    if (allVideos.length === 0 || checkpoints.length === 0)
+    if (allVideos['videoObjects'].length === 0 || checkpoints.length === 0)
         return
 
-    const lastTime = lastVisitedCPTime(checkpoints, allVideos[0].getCurrentTime().toFixed(1))
+    const lastTime = lastVisitedCPTime(checkpoints, allVideos['videoObjects'][0].getCurrentTime().toFixed(1))
     if (lastTime !== -1)
         rewind(allVideos, lastTime)
     else
