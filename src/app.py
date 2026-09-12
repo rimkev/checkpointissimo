@@ -35,3 +35,14 @@ def play_page():
         'checkpoints': session.get('checkpoints', []) # checkpoints = [125, 135, ...]; seconds
     }
     return render_template('play.html', data=data)
+
+# getting cookie updates from javascript
+@app.route('/update-cookie', methods=['POST'])
+def update_cookies():
+    # fetch message
+    message = request.get_json()
+    cookie_name = str(message['cookieName'])
+    data = message['data']
+    # override the described cookie with a new value
+    session[cookie_name] = data
+    return {'success': True}

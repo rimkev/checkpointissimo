@@ -76,6 +76,8 @@ function createVideoIFrame(element, videoId, videoList, startingTime) {
                 const pendingIndex = videoList['uncuedVideoIds'].indexOf(videoId)
                 if (pendingIndex !== -1)
                     videoList['uncuedVideoIds'].splice(pendingIndex, 1)
+                // update cookie
+                updateVideoInfoCookie(videoList)
             },
             onError: (event) => {
                 // removing the video player due to error after a delay to finish uploading first
@@ -114,6 +116,7 @@ function enableButtons() {
 // VIDEO REMOVAL
 // button click action
 document.getElementById('remove-video-button').onclick = function() {
+    // remove last video
     removeLastVideo(allVideos, checkpoints)
 }
 // removing last video from the list
@@ -123,15 +126,17 @@ function removeLastVideo(videoList, checkpointList) {
     if (videoElements.length !== 0) {
         const lastVid = videoElements[videoElements.length - 1]
         const videoId = lastVid.getVideoData().video_id
+        // remove
         lastVid.remove()
         videoList.pop()
         // removing from uncued videos list
         if (videoList['uncuedVideoIds'].includes(videoId))
             videoList['uncuedVideoIds'].splice(videoList['uncuedVideoIds'].indexOf(videoId))
         // if all videos were deleted
-        if (videoList['videoObjects'].length === 0) {
+        if (videoList['videoObjects'].length === 0)
             reset(checkpointList)
-        }
+        // update cookie
+        updateVideoInfoCookie(videoList)
     }
     else
         alert('Video list is already empty.')
@@ -207,6 +212,9 @@ function stopAllVideos(videoList) {
 }
 // start all videos
 function startAllVideos(videoList) {
+    // update video_info cookie (for timestamp updates)
+    updateVideoInfoCookie(videoList)
+    
     // make sure all videos are ready to play (buffered)
     const whileLoop = setInterval(() => {
         if (videoList['uncuedVideoIds'].length === 0) { // if no videos are left uncued
@@ -265,9 +273,10 @@ function createCheckpoint(timeSec, checkpointList, videoList) {
         rewind(videoList, timeSec)
     })
 
-    // add to list and section
+    // add to list and section; update cookie
     document.getElementById('checkpoint-section').append(newCP)
     checkpointList.push(newCP)
+    updateCookie('checkpoints', checkpointList.map(cp => Number(cp.href.split('#')[1])))
 }
 // generate text representation of seconds
 function getTextFromSec(timeSec) {
@@ -342,11 +351,20 @@ function lastVisitedCPTime(checkpointList, currentTime) {
 
 
 
-// getting info from Python Flask
+// getting info from Python Flask (session cookies)
 function getFromFlask(sessionVideoInfo, sessionCheckpoints) {
-    // dealing with videos
     if (Object.keys(sessionVideoInfo).length === 0)
         return
+
+    // ask whether or not to load data from cookies
+    const answer = confirm('Video(s) were found from your previous session. Would you like to load them now?\nPress \'Ok\' to load.\nPress \'Cancel\' to lose them irreversibly.')
+    if (!answer) {
+        updateCookie('checkpoints', [])
+        updateCookie('video_info', {})
+        return
+    }
+
+    // dealing with videos
     for (let [id, time] of Object.entries(sessionVideoInfo)) {
         createVideo(id, allVideos, Number(time))
     }
@@ -359,4 +377,29 @@ function getFromFlask(sessionVideoInfo, sessionCheckpoints) {
         createCheckpoint(timeSec, checkpoints, allVideos)
     }
     document.getElementById('jump-button').disabled = false
+}
+
+// sending info to Python Flask (session cookies)
+function updateCookie(cookieName, data) {
+    fetch('/update-cookie', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            cookieName: cookieName,
+            data: data
+        })
+    })
+}
+
+// separate func for updating video_info cookie (requires more steps)
+function updateVideoInfoCookie(videoList) {
+    if (Object.keys(videoList).length === 0)
+        return
+
+    let cookieData = {}
+    for (let vid of videoList['videoObjects'])
+        cookieData[vid.getVideoData().video_id] = vid.getCurrentTime().toFixed(1)
+    updateCookie('video_info', cookieData)
 }
