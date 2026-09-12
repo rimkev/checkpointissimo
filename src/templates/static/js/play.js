@@ -214,7 +214,7 @@ function stopAllVideos(videoList) {
 function startAllVideos(videoList) {
     // update video_info cookie (for timestamp updates)
     updateVideoInfoCookie(videoList)
-    
+
     // make sure all videos are ready to play (buffered)
     const whileLoop = setInterval(() => {
         if (videoList['uncuedVideoIds'].length === 0) { // if no videos are left uncued
@@ -252,8 +252,13 @@ document.getElementById('add-checkpoint-button').onclick = function() {
     if (allVideos['videoObjects'].length === 0)
         return
 
-    // create checkpoint
     const timeSec = allVideos['videoObjects'][0].getCurrentTime().toFixed(1)
+    // if already exists
+    if (checkpoints.map(cp => Number(cp.href.split('#')[1]).toFixed(1)).includes(timeSec)) {
+        alert('Checkpoint at this timestamp already exists.')
+        return
+    }
+    // create checkpoint
     createCheckpoint(timeSec, checkpoints, allVideos)
     
     // enabling jump button only when there is at least one checkpoint
@@ -268,6 +273,7 @@ function createCheckpoint(timeSec, checkpointList, videoList) {
     const newCP = document.createElement('a')
     newCP.textContent = getTextFromSec(timeSec)
     newCP.href = `#${timeSec}`
+    newCP.title = `Press to jump to ${newCP.textContent}`
     newCP.addEventListener('click', function(event) {
         event.preventDefault()
         rewind(videoList, timeSec)
