@@ -84,7 +84,10 @@ function createVideoIFrame(element, videoId, videoList, startingTime) {
                 setTimeout(() => {
                     removeLastVideo(videoList, checkpoints)
                 }, 300)
-                alert(`YouTube player error ${event.data}. Video cannot be included.`)
+                if (Number(event.data) === 150)
+                    alert(`Cannot import this video because video creators restricted embedded access to it.`)
+                else
+                    alert(`YouTube player error ${event.data}. Video cannot be imported.`)
             },
             'onStateChange': (event) => {
                 // PURPOSEFULLY COMMENTED OUT -> NOW EASIER TO GET CORRECT INITIAL TIMING FOR ALL VIDEOS
@@ -254,7 +257,7 @@ document.getElementById('add-checkpoint-button').onclick = function() {
 
     const timeSec = allVideos['videoObjects'][0].getCurrentTime().toFixed(1)
     // if already exists
-    if (checkpoints.map(cp => Number(cp.href.split('#')[1]).toFixed(1)).includes(timeSec)) {
+    if (checkpoints.map(cp => cp.getTimestamp()).includes(timeSec)) {
         alert('Checkpoint at this timestamp already exists.')
         return
     }
@@ -269,21 +272,71 @@ function createCheckpoint(timeSec, checkpointList, videoList) {
     if (videoList['videoObjects'].length === 0)
         return
 
-    // new CP
+    // checkpoint <div> element
+    const newDiv = document.createElement('div')
+    newDiv.className = 'cp-div'
+    newDiv.id = `${crypto.randomUUID()}` // generates random ID, needed for later removal of div
+
+    // new CP <a> element
     const newCP = document.createElement('a')
     newCP.textContent = getTextFromSec(timeSec)
-    newCP.href = `#${timeSec}`
+    newCP.href = '#'
     newCP.title = `Press to jump to ${newCP.textContent}`
     newCP.addEventListener('click', function(event) {
         event.preventDefault()
         rewind(videoList, timeSec)
     })
 
-    // add to list and section; update cookie
-    document.getElementById('checkpoint-section').append(newCP)
-    checkpointList.push(newCP)
-    updateCookie('checkpoints', checkpointList.map(cp => Number(cp.href.split('#')[1])))
+    // its individual deletion button
+    const newDelBtn = document.createElement('button')
+    newDelBtn.type = 'button'
+    newDelBtn.title = 'Delete this checkpoint'
+    newDelBtn.className = 'cp-del-btn'
+    const newDelIcon = document.createElement('i')
+    newDelIcon.setAttribute('data-lucide', 'trash')
+    newDelIcon.className = 'cp-del-icon'
+    newDelBtn.append(newDelIcon)
+    newDelBtn.addEventListener('click', function(event) {
+        // delete from the screen
+        newDiv.remove()
+        // remove from checkpoints list
+        removeCheckpointFromList(newDiv.id, checkpointList)
+        // update cookie
+        updateCookie('checkpoints', checkpointList.map(cp => cp.getTimestamp()))
+    })
+
+    // add <a> and <button> into <div>
+    newDiv.append(newCP, newDelBtn)
+
+    // insert into list and section where needed (timestamp order)
+    insertCheckpointElementInHTML(newDiv, timeSec, checkpointList)
+    insertCheckpointInList(newDiv.id, timeSec, checkpointList)
+
+    // create icon svgs
+    lucide.createIcons()
+
+    // update cookie
+    updateCookie('checkpoints', checkpointList.map(cp => cp.getTimestamp()))
 }
+// insert checkpoint HTML element into the screen so that elements remain in timestamp order
+function insertCheckpointElementInHTML(cpDivElement, timeSec, checkpointList) {
+    const insertBeforeIndex = getCheckpointIndexForInsertion(checkpointList, timeSec)
+    const section = document.getElementById('checkpoint-section')
+    section.insertBefore(cpDivElement, section.children[insertBeforeIndex])
+}
+// insert checkpoint object into a list so that elements remain in timestamp order
+function insertCheckpointInList(cpDivId, timeSec, checkpointList) {
+    const insertBeforeIndex = getCheckpointIndexForInsertion(checkpointList, timeSec)
+    checkpointList.splice(insertBeforeIndex, 0, new Checkpoint(cpDivId, timeSec))
+}
+// removes checkpoint from list
+function removeCheckpointFromList(cpDivId, checkpointList) {
+    const itemIndex = checkpointList.findIndex(cp => cp.getObjId() === String(cpDivId))
+    if (itemIndex === -1)
+        return
+    checkpointList.splice(itemIndex, 1)
+}
+
 // generate text representation of seconds
 function getTextFromSec(timeSec) {
     const date = new Date(timeSec * 1000)
@@ -330,24 +383,22 @@ document.getElementById('jump-button').onclick = function() {
     if (allVideos['videoObjects'].length === 0 || checkpoints.length === 0)
         return
 
-    const lastTime = lastVisitedCPTime(checkpoints, allVideos['videoObjects'][0].getCurrentTime().toFixed(1))
-    if (lastTime !== -1)
+    // keep in mind - getCheckpointIndexForInsertion produces the index after the item it stopped checking last
+    const lastCheckpointI = getCheckpointIndexForInsertion(checkpoints, allVideos['videoObjects'][0].getCurrentTime())
+    if (lastCheckpointI !== 0) {
+        const lastTime = checkpoints[lastCheckpointI - 1].getTimestamp()
         rewind(allVideos, lastTime)
+    }
     else
         alert('Cannot go to previous checkpoint.')
 }
-// get the last visited checkpoint time
-function lastVisitedCPTime(checkpointList, currentTime) {
-    const times = checkpointList
-        .map(cp => Number(cp.href.split('#')[1]))
-        .sort((a, b) => a - b)
-    
-    for (let i = times.length - 1; i >= 0; i--) {
-        if (times[i] <= currentTime)
-            return times[i]
+// get the index for inserting xTime (in seconds) in a list assuming elements are in order (by timestamps)
+function getCheckpointIndexForInsertion(checkpointList, xTime) {
+    for (let i = checkpointList.length - 1; i >= 0; i--) {
+        if (checkpointList[i].getTimestamp() <= Number(xTime).toFixed(1))
+            return i + 1
     }
-
-    return -1
+    return 0
 }
 
 
