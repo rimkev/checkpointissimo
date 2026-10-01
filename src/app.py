@@ -1,5 +1,5 @@
 # imports
-from flask import Flask, render_template, request, make_response, session
+from flask import Flask, render_template, request, make_response, session, jsonify
 from markupsafe import escape
 from os import getenv
 
@@ -30,15 +30,11 @@ def sources_page():
 # main program's page route
 @app.route('/play', methods=['GET'])
 def play_page():
-    data = {
-        'video_info': session.get('video_info', {}), # video_info = {'abc': 123.5, ...}; id and seconds
-        'checkpoints': session.get('checkpoints', []) # checkpoints = [125, 135, ...]; seconds
-    }
-    return render_template('play.html', data=data)
+    return render_template('play.html')
 
 # getting cookie updates from javascript
-@app.route('/update-cookie', methods=['POST'])
-def update_cookies():
+@app.route('/write-cookie', methods=['POST'])
+def write_cookie():
     # fetch message
     message = request.get_json()
     cookie_name = str(message['cookieName'])
@@ -46,3 +42,12 @@ def update_cookies():
     # override the described cookie with a new value
     session[cookie_name] = data
     return {'success': True}
+
+# returning all session cookies
+@app.route('/read-cookies', methods=['GET'])
+def read_cookies():
+    data = {
+        'video_info': session.get('video_info', {}), # video_info = {'abc': 123.5, ...}; id and seconds
+        'checkpoints': session.get('checkpoints', []) # checkpoints = [125, 135, ...]; seconds
+    }
+    return jsonify(data)
