@@ -17,11 +17,6 @@ app.secret_key = session_key.encode('utf-8')
 def homepage():
     return render_template('index.html')
 
-# about page route
-@app.route('/about', methods=['GET'])
-def about_page():
-    return render_template('about.html')
-
 # sources page route
 @app.route('/sources', methods=['GET'])
 def sources_page():
