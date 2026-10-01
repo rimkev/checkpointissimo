@@ -109,7 +109,7 @@ function createVideoIFrame(element, videoId, startingTime) {
                     removeLastVideo()
                 }, 300)
                 if (Number(event.data) === 150)
-                    alert(`Cannot import this video because video creators restricted embedded access to it.`)
+                    alert(`Cannot import this video because either video creators restricted embedded access to it or Youtube is not convinced you are not a bot.`)
                 else
                     alert(`YouTube player error ${event.data}. Video cannot be imported.`)
             },
@@ -160,13 +160,12 @@ document.getElementById('remove-video-button').onclick = function() {
  * @returns {void}
  */
 function removeLastVideo() {
-    const videoElements = document.getElementsByClassName('yt-video')
-
-    if (videoElements.length !== 0) {
-        const lastVid = videoElements[videoElements.length - 1]
-        const videoId = lastVid.getVideoData().video_id
-        // remove
-        lastVid.remove()
+    if (state.videos.length !== 0) {
+        const lastVideo = state.videos[state.videos.length - 1]
+        const videoId = lastVideo.getVideoData().video_id
+        // destroying video player from DOM
+        lastVideo.destroy()
+        // removing from videos list
         state.videos.pop()
         // removing from uncued videos list
         if (state.uncuedVideoIds.includes(videoId))
@@ -311,6 +310,8 @@ function interpretSessionCookies(sessionVideoInfo, sessionCheckpoints) {
     if (!answer) {
         common.writeCookie('checkpoints', [])
         common.writeCookie('video_info', {})
+        state.checkpoints = []
+        state.videos = []
         return
     }
 
