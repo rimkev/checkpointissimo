@@ -4,10 +4,10 @@
 ![functionality demonstration gif](./img/demo.gif)
 
 ## Main Functionality as of Latest Commit
-> * Multiple videos can be added and played at the same time.
-> * Checkpoints let you get back to any timestamp you placed yourself as well as get back to the last one.
-> * Cookies save all of your checkpoints and added videos. Nothing is saved on the server.
-> * Checkpoints always rewind videos 1 second earlier than intended for ease of use.
+* Multiple videos can be added and played at the same time.
+* Checkpoints let you get back to any timestamp you placed yourself as well as get back to the last one.
+* Cookies save all of your checkpoints and added videos. Nothing is saved on the server.
+* Checkpoints always rewind videos 1 second earlier than intended for ease of use.
 
 
 > [!NOTE]
